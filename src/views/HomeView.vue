@@ -9,20 +9,29 @@ import * as d3 from 'd3'
 
 export default {
     name: 'HomeView',
+    data() {
+        return {
+            adjacencyMatrix: [
+                [0, 12, 0, 0, 0, 16, 14],
+                [12, 0, 10, 0, 0, 7, 0],
+                [0, 10, 0, 3, 5, 6, 0],
+                [0, 0, 3, 0, 4, 0, 0],
+                [0, 0, 5, 4, 0, 2, 8],
+                [16, 7, 6, 0, 2, 0, 9],
+                [14, 0, 0, 0, 8, 9, 0]
+            ], 
+            nodes: [], 
+            firstTick: true, 
+        }
+    },
     mounted() {
-        // Input data
-        const adjacencyMatrix = [
-            [0, 12, 0, 0, 0, 16, 14],
-            [12, 0, 10, 0, 0, 7, 0],
-            [0, 10, 0, 3, 5, 6, 0],
-            [0, 0, 3, 0, 4, 0, 0],
-            [0, 0, 5, 4, 0, 2, 8],
-            [16, 7, 6, 0, 2, 0, 9],
-            [14, 0, 0, 0, 8, 9, 0]
-        ];
-
-        const nodes = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-        const n = nodes.length;
+        this.nodes = Array.from({ length: this.adjacencyMatrix.length }, (_, i) => {
+            let name = String.fromCharCode(65 + i);
+            if (i >= 26) {
+                name = String.fromCharCode(65 + Math.floor(i / 26) - 1) + String.fromCharCode(65 + i % 26);
+            }
+            return { name: name, fx: null, fy: null };
+        });
 
         // Create an SVG container
         const svg = d3.select("svg");
@@ -35,17 +44,24 @@ export default {
         const innerWidth = width - margin.left - margin.right;
         const innerHeight = height - margin.top - margin.bottom;
 
+        // Manually set positions
+        this.nodes.forEach((node, i) => {
+            node.fx = innerWidth / 2 + Math.cos(i * 2 * Math.PI / this.nodes.length) * innerWidth / 3;
+            node.fy = innerHeight / 2 + Math.sin(i * 2 * Math.PI / this.nodes.length) * innerHeight / 3;
+            console.log(Math.cos(i * 2 * Math.PI / this.nodes.length), Math.sin(i * 2 * Math.PI / this.nodes.length))
+        });
+
         // Create a graph layout
         const simulation = d3
-            .forceSimulation()
-            .nodes(nodes.map((node, i) => ({ name: node, index: i })))
+            .forceSimulation(this.nodes)
+            .nodes(this.nodes)
             .force(
                 "link",
                 d3
                     .forceLink()
                     .id((d) => d.index)
                     .links(
-                        adjacencyMatrix.reduce((links, row, sourceIndex) => {
+                        this.adjacencyMatrix.reduce((links, row, sourceIndex) => {
                             row.forEach((weight, targetIndex) => {
                                 if (weight > 0 && sourceIndex < targetIndex) {
                                     links.push({ source: sourceIndex, target: targetIndex, weight });
@@ -58,7 +74,7 @@ export default {
             )
             .force("charge", d3.forceManyBody().strength(-300))
             .force("center", d3.forceCenter(innerWidth / 2, innerHeight / 2))
-            .force("collide", d3.forceCollide().radius(30)); // Add this line
+            .force("collide", d3.forceCollide().radius(30));
 
         // Create links
         const links = svg
@@ -76,7 +92,7 @@ export default {
             .append("circle")
             .attr("r", 20)
             .style("fill", "lightblue")
-            .call(drag(simulation)); // Make the nodes draggable
+            .call(this.drag(simulation)); // Make the nodes draggable
 
         // Add labels to nodes
         const labels = svg
@@ -95,14 +111,24 @@ export default {
             .enter()
             .append("text")
             .text((d) => d.weight)
-            .style("fill", "#09e")
-            .style("font-size", "21px")
+            .style("stroke", "#09e")
+            .style("stroke-width", "1px")
+            .style("fill", "#fff")
+            .style("font-size", "27px")
             .style("font-weight", "bold")
             .style("text-anchor", "middle")
-            .style("alignment-baseline", "middle");
+            .style("alignment-baseline", "middle")
 
         // Start the simulation
         simulation.on("tick", () => {
+            // console.log("tick")
+            if(this.firstTick) {
+                this.firstTick = false;
+                this.nodes.forEach((node, i) => {
+                    node.fx = null;
+                    node.fy = null;
+                });
+            }
             nodesSelection
                 .attr("cx", (d) => d.x)
                 .attr("cy", (d) => d.y);
@@ -118,33 +144,35 @@ export default {
                 .attr("x", (d) => (d.source.x + d.target.x) / 2)
                 .attr("y", (d) => (d.source.y + d.target.y) / 2);
         });
+
+        console.log(simulation)
     },
+    methods: {
+        drag(simulation) {
+            function dragstarted(event) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                event.subject.fx = event.subject.x;
+                event.subject.fy = event.subject.y;
+            }
+
+            function dragged(event) {
+                event.subject.fx = event.x;
+                event.subject.fy = event.y;
+            }
+
+            function dragended(event) {
+                if (!event.active) simulation.alphaTarget(0);
+                event.subject.fx = null;
+                event.subject.fy = null;
+            }
+
+            return d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended);
+        }, 
+    }
 };
-
-// Add the drag behavior
-function drag(simulation) {
-    function dragstarted(event) {
-        if (!event.active) simulation.alphaTarget(0.3).restart();
-        event.subject.fx = event.subject.x;
-        event.subject.fy = event.subject.y;
-    }
-
-    function dragged(event) {
-        event.subject.fx = event.x;
-        event.subject.fy = event.y;
-    }
-
-    function dragended(event) {
-        if (!event.active) simulation.alphaTarget(0);
-        event.subject.fx = null;
-        event.subject.fy = null;
-    }
-
-    return d3.drag()
-        .on("start", dragstarted)
-        .on("drag", dragged)
-        .on("end", dragended);
-}
 </script>
 
 <style scoped>
