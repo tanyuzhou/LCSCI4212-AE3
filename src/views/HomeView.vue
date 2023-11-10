@@ -46,8 +46,8 @@ export default {
 
         // Manually set positions
         this.nodes.forEach((node, i) => {
-            node.fx = innerWidth / 2 + Math.cos(i * 2 * Math.PI / this.nodes.length) * innerWidth / 3;
-            node.fy = innerHeight / 2 + Math.sin(i * 2 * Math.PI / this.nodes.length) * innerHeight / 3;
+            node.fx = innerWidth / 2 + (Math.cos(i * 2 * Math.PI / this.nodes.length) * -1) * innerWidth / 3;
+            node.fy = innerHeight / 2 + (Math.sin(i * 2 * Math.PI / this.nodes.length) * -1) * innerHeight / 3;
             console.log(Math.cos(i * 2 * Math.PI / this.nodes.length), Math.sin(i * 2 * Math.PI / this.nodes.length))
         });
 
