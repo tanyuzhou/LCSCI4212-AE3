@@ -11,15 +11,24 @@ export default {
     name: 'HomeView',
     data() {
         return {
+            // adjacencyMatrix: [
+            //     [null, 12, null, null, null, 16, 14],
+            //     [12, null, 1null, null, null, 7, null],
+            //     [null, 1null, null, 3, 5, 6, null],
+            //     [null, null, 3, null, 4, null, null],
+            //     [null, null, 5, 4, null, 2, 8],
+            //     [16, 7, 6, null, 2, null, 9],
+            //     [14, null, null, null, 8, 9, null]
+            // ], 
             adjacencyMatrix: [
-                [0, 12, 0, 0, 0, 16, 14],
-                [12, 0, 10, 0, 0, 7, 0],
-                [0, 10, 0, 3, 5, 6, 0],
-                [0, 0, 3, 0, 4, 0, 0],
-                [0, 0, 5, 4, 0, 2, 8],
-                [16, 7, 6, 0, 2, 0, 9],
-                [14, 0, 0, 0, 8, 9, 0]
-            ], 
+                [null, 3, 7, 4, null, null, null],
+                [3, null, 2, null, null, 7, null],
+                [7, 2, null, 8, 1, null, null],
+                [4, null, 8, null, null, null, 2],
+                [null, null, 1, null, null, 7, null],
+                [null, 7, null, null, null, null, 1],
+                [null, null, null, 2, null, 1, null]
+            ],
             nodes: [], 
             firstTick: true, 
         }
@@ -37,7 +46,6 @@ export default {
         const svg = d3.select("svg");
 
         // Define the dimensions and margins for the graph
-        // 获取svg实际的宽高
         const width = svg.node().getBoundingClientRect().width;
         const height = svg.node().getBoundingClientRect().height;
         const margin = { top: 50, right: 50, bottom: 50, left: 50 };
@@ -63,10 +71,11 @@ export default {
                     .links(
                         this.adjacencyMatrix.reduce((links, row, sourceIndex) => {
                             row.forEach((weight, targetIndex) => {
-                                if (weight > 0 && sourceIndex < targetIndex) {
+                                if (weight != null && sourceIndex < targetIndex) {
                                     links.push({ source: sourceIndex, target: targetIndex, weight });
                                 }
                             });
+                            console.log(links)
                             return links;
                         }, [])
                     )
@@ -92,7 +101,7 @@ export default {
             .append("circle")
             .attr("r", 20)
             .style("fill", "lightblue")
-            .call(this.drag(simulation)); // Make the nodes draggable
+            .call(this.drag(simulation)); 
 
         // Add labels to nodes
         const labels = svg
