@@ -13,24 +13,24 @@ export default {
     data() {
         return {
             simulation: null,
-            adjacencyMatrix: [
-                [Infinity, 12, Infinity, Infinity, Infinity, 16, 14],
-                [12, Infinity, 10, Infinity, Infinity, 7, Infinity],
-                [Infinity, 10, Infinity, 3, 5, 6, Infinity],
-                [Infinity, Infinity, 3, Infinity, 4, Infinity, Infinity],
-                [Infinity, Infinity, 5, 4, Infinity, 2, 8],
-                [16, 7, 6, Infinity, 2, Infinity, 9],
-                [14, Infinity, Infinity, Infinity, 8, 9, Infinity]
-            ], 
             // adjacencyMatrix: [
-            //     [Infinity, 3, 7, 4, Infinity, Infinity, Infinity],
-            //     [3, Infinity, 2, Infinity, Infinity, 7, Infinity],
-            //     [7, 2, Infinity, 8, 1, Infinity, Infinity],
-            //     [4, Infinity, 8, Infinity, Infinity, Infinity, 2],
-            //     [Infinity, Infinity, 1, Infinity, Infinity, 7, Infinity],
-            //     [Infinity, 7, Infinity, Infinity, 7, Infinity, 1],
-            //     [Infinity, Infinity, Infinity, 2, Infinity, 1, Infinity]
-            // ],
+            //     [Infinity, 12, Infinity, Infinity, Infinity, 16, 14],
+            //     [12, Infinity, 10, Infinity, Infinity, 7, Infinity],
+            //     [Infinity, 10, Infinity, 3, 5, 6, Infinity],
+            //     [Infinity, Infinity, 3, Infinity, 4, Infinity, Infinity],
+            //     [Infinity, Infinity, 5, 4, Infinity, 2, 8],
+            //     [16, 7, 6, Infinity, 2, Infinity, 9],
+            //     [14, Infinity, Infinity, Infinity, 8, 9, Infinity]
+            // ], 
+            adjacencyMatrix: [
+                [Infinity, 3, 7, 4, Infinity, Infinity, Infinity],
+                [3, Infinity, 2, Infinity, Infinity, 7, Infinity],
+                [7, 2, Infinity, 8, 1, Infinity, Infinity],
+                [4, Infinity, 8, Infinity, Infinity, Infinity, 2],
+                [Infinity, Infinity, 1, Infinity, Infinity, 7, Infinity],
+                [Infinity, 7, Infinity, Infinity, 7, Infinity, 1],
+                [Infinity, Infinity, Infinity, 2, Infinity, 1, Infinity]
+            ],
             nodes: [],
             firstTick: true,
             dijkstra: null, 
