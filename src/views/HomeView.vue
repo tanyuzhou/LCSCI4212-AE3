@@ -109,7 +109,7 @@ export default {
             .style("fill", "lightblue")
             .call(this.drag(this.simulation))
         
-        this.dijkstra = dijkstra(this.adjacencyMatrix, 2, 6)[1]
+        this.dijkstra = dijkstra(this.adjacencyMatrix, 0, 6)[1]
         console.log(`dijkstra: `, JSON.stringify(this.dijkstra)) // dijkstra:  [2,4,6]
         // Create shortest link between nodes based on dijkstra
         this.createShortestPathLinks()
